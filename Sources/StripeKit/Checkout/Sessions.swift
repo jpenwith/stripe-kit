@@ -109,6 +109,8 @@ public struct Session: Codable {
     /// Tax and discount details for the computed total amount.
     public var totalDetails: SessionTotalDetails?
     
+    public var clientSecret: String?
+    
     public init(id: String,
                 cancelUrl: String? = nil,
                 clientReferenceId: String? = nil,

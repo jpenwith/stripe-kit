@@ -49,7 +49,7 @@ public protocol SessionRoutes {
     /// - Returns: Returns a Session object.
     func create(lineItems: [[String: Any]]?,
                 mode: SessionMode,
-                successUrl: String,
+                successUrl: String?,
                 cancelUrl: String?,
                 clientReferenceId: String?,
                 currency: Currency?,
@@ -80,6 +80,9 @@ public protocol SessionRoutes {
                 submitType: SessionSubmitType?,
                 subscriptionData: [String: Any]?,
                 taxIdCollection: [String: Any]?,
+                uiMode: String?,
+                returnUrl: String?,
+                redirectOnCompletion: String?,
                 expand: [String]?) async throws -> Session
     
     /// A Session can be expired when it is in one of these statuses: `open`
@@ -123,7 +126,7 @@ public struct StripeSessionRoutes: SessionRoutes {
     
     public func create(lineItems: [[String: Any]]? = nil,
                        mode: SessionMode,
-                       successUrl: String,
+                       successUrl: String?,
                        cancelUrl: String? = nil,
                        clientReferenceId: String? = nil,
                        currency: Currency? = nil,
@@ -154,11 +157,18 @@ public struct StripeSessionRoutes: SessionRoutes {
                        submitType: SessionSubmitType? = nil,
                        subscriptionData: [String: Any]? = nil,
                        taxIdCollection: [String: Any]? = nil,
+                       uiMode: String? = nil,
+                       returnUrl: String? = nil,
+                       redirectOnCompletion: String? = nil,
                        expand: [String]? = nil) async throws -> Session {
-        var body: [String: Any] = ["mode": mode.rawValue,
-                                   "success_url": successUrl]
+        var body: [String: Any] = ["mode": mode.rawValue]
+        
         if let lineItems {
             body["line_items"] = lineItems
+        }
+
+        if let successUrl {
+            body["success_url"] = successUrl
         }
         
         if let cancelUrl {
@@ -279,6 +289,18 @@ public struct StripeSessionRoutes: SessionRoutes {
         
         if let taxIdCollection {
             taxIdCollection.forEach { body["tax_id_collection[\($0)]"] = $1 }
+        }
+        
+        if let uiMode {
+            body["ui_mode"] = uiMode
+        }
+        
+        if let returnUrl {
+            body["return_url"] = returnUrl
+        }
+        
+        if let redirectOnCompletion {
+            body["redirect_on_completion"] = redirectOnCompletion
         }
         
         if let expand {
